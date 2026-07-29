@@ -1,0 +1,5 @@
+@import "grapesjs/dist/css/grapes.min.css";
+
+.gjs-builder-shell {
+    height: calc(100vh - 12rem);
+}
