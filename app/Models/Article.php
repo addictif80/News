@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -74,5 +75,18 @@ class Article extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published')->where('published_at', '<=', now());
+    }
+
+    protected function featuredImageUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (blank($this->featured_image)) {
+                return null;
+            }
+
+            return str_starts_with($this->featured_image, 'http')
+                ? $this->featured_image
+                : asset('storage/'.$this->featured_image);
+        });
     }
 }

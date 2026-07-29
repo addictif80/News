@@ -3,8 +3,8 @@
         @include('site.partials.source-badge', ['article' => $article])
     @endif
     <h1>{{ $article->title }}</h1>
-    @if($article->featured_image)
-        <img src="{{ asset('storage/'.$article->featured_image) }}" alt="{{ $article->title }}">
+    @if($article->featured_image_url)
+        <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}">
     @endif
     <p class="article-meta">
         {{ $article->author?->name }} — {{ optional($article->published_at)->translatedFormat('d F Y') }}

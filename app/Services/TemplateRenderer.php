@@ -21,7 +21,7 @@ class TemplateRenderer
 
         $replacements = [
             '{{title}}' => e($article->title),
-            '{{featured_image}}' => $article->featured_image ? asset('storage/'.$article->featured_image) : '',
+            '{{featured_image}}' => $article->featured_image_url ?? '',
             '{{content}}' => $article->content ?? '',
             '{{date}}' => optional($article->published_at)->translatedFormat('d F Y') ?? '',
             '{{author}}' => $article->author?->name ?? '',
