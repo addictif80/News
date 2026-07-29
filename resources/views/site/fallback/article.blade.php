@@ -7,7 +7,9 @@
         <img class="article-featured-image" src="{{ $article->featured_image_url }}" alt="{{ $article->title }}">
     @endif
     <p>
-        <span class="article-author">{{ $article->author?->name }}</span>
+        @if($article->author)
+            <span class="article-author">{{ $article->author->name }}</span>
+        @endif
         <span class="article-date">{{ optional($article->published_at)->translatedFormat('d F Y') }}</span>
     </p>
     <div class="article-content">{!! $article->content !!}</div>

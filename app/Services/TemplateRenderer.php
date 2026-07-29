@@ -98,9 +98,7 @@ class TemplateRenderer
                 continue;
             }
 
-            $fragment = $dom->createDocumentFragment();
-            @$fragment->appendXML($this->toXmlSafe($fragmentHtml));
-            $node->parentNode->replaceChild($fragment, $node);
+            $this->replaceNodeWithHtml($dom, $node, $fragmentHtml);
         }
 
         $html = html_entity_decode($dom->saveHTML(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -150,8 +148,34 @@ class TemplateRenderer
         return '<style>'.$css.'</style>'.$html;
     }
 
-    private function toXmlSafe(string $html): string
+    /**
+     * Insert an arbitrary (Blade-rendered) HTML fragment in place of $node.
+     *
+     * DOMDocument::appendXML() requires strictly well-formed XML, which Blade
+     * output (unescaped ampersands, boolean attributes, etc.) does not
+     * guarantee. Parsing the fragment through loadHTML() is far more lenient
+     * and mirrors how a browser would interpret the same markup.
+     */
+    private function replaceNodeWithHtml(DOMDocument $dom, \DOMNode $node, string $html): void
     {
-        return '<div>'.$html.'</div>';
+        $fragmentDom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $fragmentDom->loadHTML('<?xml encoding="utf-8"><div id="__fragment_root__">'.$html.'</div>',
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $root = (new DOMXPath($fragmentDom))->query('//*[@id="__fragment_root__"]')->item(0);
+
+        if (! $root) {
+            return;
+        }
+
+        $parent = $node->parentNode;
+
+        foreach (iterator_to_array($root->childNodes) as $child) {
+            $parent->insertBefore($dom->importNode($child, true), $node);
+        }
+
+        $parent->removeChild($node);
     }
 }

@@ -14,7 +14,7 @@
         @endif
         <label>Email <input type="email" name="email" value="{{ old('email') }}" required></label>
         <label>Mot de passe <input type="password" name="password" required></label>
-        <label><input type="checkbox" name="remember"> Se souvenir de moi</label>
+        <label class="auth-form__checkbox"><input type="checkbox" name="remember"> Se souvenir de moi</label>
         <button type="submit">Se connecter</button>
         <a href="{{ route('register') }}">Créer un compte</a>
     </form>
