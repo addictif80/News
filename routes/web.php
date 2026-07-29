@@ -1,7 +1,39 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\WidgetController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', HomeController::class)->name('home');
+
+Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/{article:slug}/comments', [CommentController::class, 'store'])
+    ->middleware('auth')
+    ->name('articles.comments.store');
+
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+
+Route::get('/widgets/{token}.js', [WidgetController::class, 'script'])->name('widgets.script');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/abonnement', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/abonnement/portail', [SubscriptionController::class, 'portal'])->name('subscription.portal');
+    Route::get('/abonnement/confirmation', [SubscriptionController::class, 'success'])->name('subscription.success');
 });
+
+Route::get('/login', [LoginController::class, 'create'])->name('login')->middleware('guest');
+Route::post('/login', [LoginController::class, 'store'])->middleware('guest');
+Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
+Route::get('/inscription', [RegisterController::class, 'create'])->name('register')->middleware('guest');
+Route::post('/inscription', [RegisterController::class, 'store'])->middleware('guest');
+
+// Catch-all for CMS pages must stay last.
+Route::get('/{page:slug}', [PageController::class, 'show'])->name('pages.show');

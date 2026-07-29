@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Settings\SmtpSettings;
+use App\Settings\StripeSettings;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDynamicMailer();
+        $this->configureDynamicStripe();
     }
 
     private function configureDynamicMailer(): void
@@ -49,5 +51,26 @@ class AppServiceProvider extends ServiceProvider
         Config::set('mail.mailers.smtp.encryption', $settings->encryption === 'none' ? null : $settings->encryption);
         Config::set('mail.from.address', $settings->from_address);
         Config::set('mail.from.name', $settings->from_name);
+    }
+
+    private function configureDynamicStripe(): void
+    {
+        if (! Schema::hasTable('settings')) {
+            return;
+        }
+
+        try {
+            $settings = app(StripeSettings::class);
+        } catch (\Throwable) {
+            return;
+        }
+
+        if (blank($settings->secret_key)) {
+            return;
+        }
+
+        Config::set('cashier.key', $settings->public_key);
+        Config::set('cashier.secret', $settings->secret_key);
+        Config::set('cashier.webhook.secret', $settings->webhook_secret);
     }
 }

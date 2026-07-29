@@ -29,6 +29,11 @@ class Article extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
