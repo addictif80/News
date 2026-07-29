@@ -43,6 +43,13 @@
     padding: 2.5rem 1.5rem 3.5rem;
 }
 
+/* Consistent breathing room between stacked homepage blocks (alert banner,
+   article grid, newsletter signup, etc.), whatever order the drag-and-drop
+   builder puts them in. */
+.site-main > * + * {
+    margin-top: 2.5rem;
+}
+
 a {
     color: inherit;
 }
