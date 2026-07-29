@@ -15,7 +15,7 @@ class TemplateRenderer
     {
         $template = $article->template ?? $this->defaultTemplate('article');
 
-        if (! $template) {
+        if (! $template || blank($template->html)) {
             return view('site.fallback.article', ['article' => $article])->render();
         }
 
@@ -41,7 +41,7 @@ class TemplateRenderer
     {
         $template = $page->template ?? $this->defaultTemplate('page');
 
-        if (! $template) {
+        if (! $template || blank($template->html)) {
             return view('site.fallback.page', ['page' => $page])->render();
         }
 

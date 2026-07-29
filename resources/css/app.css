@@ -6,4 +6,491 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Brand palette extracted from the leblogateur.fr logo. */
+    --color-brand-red: #d71e1f;
+    --color-brand-red-dark: #b0181a;
+    --color-brand-navy: #26263a;
+    --color-brand-navy-light: #34344c;
+}
+
+/* ---------- Base ---------- */
+
+.site-body {
+    background-color: #f4f4f5; /* gray-100 */
+    color: #27272a; /* gray-800 */
+    font-family: var(--font-sans);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.site-main {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+a {
+    color: inherit;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+    background-color: var(--color-brand-navy);
+    color: #f4f4f5;
+}
+
+.site-header__bar {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.site-header__brand {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.site-header__brand img {
+    max-height: 2.25rem;
+    display: block;
+}
+
+.site-header__auth .auth-widget {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #d4d4d8;
+}
+
+.site-header__auth .auth-widget a {
+    text-decoration: none;
+    color: #e4e4e7;
+}
+
+.site-header__auth .auth-widget a:hover {
+    color: var(--color-brand-red);
+}
+
+.site-header__auth form {
+    display: inline;
+}
+
+.site-header__auth button {
+    background: none;
+    border: none;
+    color: #e4e4e7;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+.site-header__auth button:hover {
+    color: var(--color-brand-red);
+}
+
+.site-nav {
+    background-color: var(--color-brand-navy-light);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-nav ul {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #d4d4d8;
+}
+
+.site-nav li {
+    padding: 0.65rem 0;
+    white-space: nowrap;
+}
+
+/* ---------- Alert banner (rouge, toujours) ---------- */
+
+.alert-banner {
+    background-color: var(--color-brand-red);
+    color: #ffffff;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.65rem 1rem;
+    letter-spacing: 0.01em;
+}
+
+.alert-banner a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Even for non-default styles, keep the alert family firmly in the red register. */
+.alert-banner--info,
+.alert-banner--success {
+    background-color: var(--color-brand-navy);
+}
+
+.alert-banner--warning {
+    background-color: var(--color-brand-red-dark);
+}
+
+.alert-banner--danger {
+    background-color: var(--color-brand-red);
+}
+
+/* ---------- Cards & article grid ---------- */
+
+.article-card-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.article-card,
+.news-widget__item {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.article-card:hover {
+    border-color: var(--color-brand-red);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.article-card img,
+.news-widget__item img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background-color: #e4e4e7;
+}
+
+.article-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0.9rem 1rem 0.4rem;
+    color: #18181b;
+}
+
+.article-card p {
+    font-size: 0.875rem;
+    color: #52525b;
+    margin: 0 1rem 1rem;
+}
+
+/* ---------- Source badge (articles importés) ---------- */
+
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    align-self: flex-start;
+    margin: 0 1rem 0.75rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-brand-red);
+    background-color: #fdeceb;
+    border: 1px solid #f8c9c7;
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.source-badge:hover {
+    background-color: var(--color-brand-red);
+    color: #ffffff;
+    border-color: var(--color-brand-red);
+}
+
+/* ---------- Article / page templates (blocs GrapesJS) ---------- */
+
+.article-title,
+.page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #18181b;
+    line-height: 1.2;
+    margin: 0 0 1rem;
+}
+
+.article-featured-image,
+.page-featured-image {
+    width: 100%;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.article-content,
+.page-content {
+    font-size: 1.0625rem;
+    color: #3f3f46;
+}
+
+.article-content p,
+.page-content p {
+    margin-bottom: 1.1rem;
+}
+
+.article-date,
+.article-author {
+    display: inline-block;
+    font-size: 0.8125rem;
+    color: #71717a;
+    margin-right: 1rem;
+}
+
+.article-fallback,
+.page-fallback {
+    background-color: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.5rem;
+    padding: 2rem;
+}
+
+/* ---------- Newsletter & subscription ---------- */
+
+.newsletter-signup {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.newsletter-signup input[type='email'] {
+    flex: 1 1 14rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.btn,
+.newsletter-signup button,
+.subscription-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.15rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--color-brand-red);
+    color: #ffffff;
+}
+
+.btn:hover,
+.newsletter-signup button:hover,
+.subscription-cta a:hover {
+    background-color: var(--color-brand-red-dark);
+}
+
+.subscription-cta {
+    background-color: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+/* ---------- Comments / auth forms ---------- */
+
+.auth-form {
+    max-width: 24rem;
+    margin: 4rem auto;
+    background-color: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.auth-form h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.375rem;
+    color: var(--color-brand-navy);
+}
+
+.auth-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.8125rem;
+    color: #52525b;
+}
+
+.auth-form input {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 0.375rem;
+    font-size: 0.9375rem;
+}
+
+.auth-form button {
+    margin-top: 0.4rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: var(--color-brand-red);
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-form button:hover {
+    background-color: var(--color-brand-red-dark);
+}
+
+.auth-form a {
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    color: var(--color-brand-navy);
+}
+
+.auth-form__errors {
+    background-color: #fdeceb;
+    color: var(--color-brand-red-dark);
+    border: 1px solid #f8c9c7;
+    border-radius: 0.375rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8125rem;
+}
+
+/* ---------- Popup modal ---------- */
+
+.site-popup {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(24, 24, 27, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.site-popup__content {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    max-width: 28rem;
+    width: calc(100% - 2rem);
+    border-top: 4px solid var(--color-brand-red);
+}
+
+.site-popup__content [data-popup-close] {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #a1a1aa;
+    cursor: pointer;
+}
+
+.site-popup__content [data-popup-close]:hover {
+    color: var(--color-brand-red);
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+    background-color: var(--color-brand-navy);
+    color: #d4d4d8;
+    margin-top: 3rem;
+}
+
+.site-footer__newsletter {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-footer__newsletter p {
+    margin: 0;
+    font-weight: 600;
+    color: #f4f4f5;
+}
+
+.site-footer__bottom {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+
+/* ---------- Embeddable widget ---------- */
+
+.news-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-family: var(--font-sans);
+    max-width: 20rem;
+}
+
+.news-widget__item {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+}
+
+.news-widget__item img {
+    width: 3.5rem;
+    height: 3.5rem;
+    aspect-ratio: 1;
+    border-radius: 0.375rem;
+    flex-shrink: 0;
+}
+
+.news-widget__item span {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #18181b;
+}
+
+.news-widget--dark .news-widget__item {
+    background-color: var(--color-brand-navy);
+    border-color: var(--color-brand-navy-light);
+}
+
+.news-widget--dark .news-widget__item span {
+    color: #f4f4f5;
 }

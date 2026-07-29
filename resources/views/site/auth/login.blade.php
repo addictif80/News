@@ -5,7 +5,7 @@
     <title>Connexion</title>
     @vite(['resources/css/app.css'])
 </head>
-<body>
+<body class="site-body">
     <form method="POST" action="{{ route('login') }}" class="auth-form">
         @csrf
         <h1>Connexion</h1>

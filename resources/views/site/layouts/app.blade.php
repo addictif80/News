@@ -15,15 +15,18 @@
     @endif
     @vite(['resources/css/app.css'])
 </head>
-<body>
+<body class="site-body">
+    @include('site.partials.header')
+
     @if($showGlobalBanner ?? true)
         @include('site.partials.active-banner')
     @endif
 
-    <main>
+    <main class="site-main">
         {!! $content !!}
     </main>
 
+    @include('site.partials.footer')
     @include('site.partials.active-popup')
 </body>
 </html>

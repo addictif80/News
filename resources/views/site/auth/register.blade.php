@@ -5,7 +5,7 @@
     <title>Inscription</title>
     @vite(['resources/css/app.css'])
 </head>
-<body>
+<body class="site-body">
     <form method="POST" action="{{ route('register') }}" class="auth-form">
         @csrf
         <h1>Inscription</h1>
