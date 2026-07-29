@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\NewsletterCampaigns\Tables;
 
+use App\Jobs\SendNewsletterCampaignJob;
+use App\Models\NewsletterSubscriber;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -16,32 +20,49 @@ class NewsletterCampaignsTable
         return $table
             ->columns([
                 TextColumn::make('subject')
+                    ->label('Objet')
                     ->searchable(),
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->label('Statut')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'draft' => 'Brouillon',
+                        'sending' => 'Envoi en cours',
+                        'sent' => 'Envoyé',
+                        default => $state,
+                    }),
                 TextColumn::make('scheduled_at')
-                    ->dateTime()
+                    ->label('Programmé pour')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 TextColumn::make('sent_at')
-                    ->dateTime()
+                    ->label('Envoyé le')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 TextColumn::make('recipients_count')
+                    ->label('Destinataires')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
+                Action::make('send')
+                    ->label('Envoyer maintenant')
+                    ->icon(Heroicon::OutlinedPaperAirplane)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'draft')
+                    ->action(function ($record) {
+                        $record->update(['status' => 'sending']);
+                        SendNewsletterCampaignJob::dispatch($record);
+
+                        Notification::make()
+                            ->title('Envoi lancé pour '.NewsletterSubscriber::where('is_confirmed', true)->whereNull('unsubscribed_at')->count().' abonnés')
+                            ->success()
+                            ->send();
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([
