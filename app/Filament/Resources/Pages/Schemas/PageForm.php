@@ -19,7 +19,11 @@ class PageForm
             ->components([
                 Select::make('template_id')
                     ->label('Template')
-                    ->relationship('template', 'name')
+                    ->relationship(
+                        'template',
+                        'name',
+                        modifyQueryUsing: fn ($query) => $query->where('type', 'page'),
+                    )
                     ->searchable()
                     ->preload(),
                 TextInput::make('title')

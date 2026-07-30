@@ -27,7 +27,7 @@ class TemplateRenderer
             '{{author}}' => $article->author?->name ?? '',
         ];
 
-        $html = strtr($template->html ?? '', $replacements);
+        $html = $this->stripUnresolvedPlaceholders(strtr($template->html ?? '', $replacements));
 
         if ($article->is_imported && $article->sourceSite) {
             $badge = view('site.partials.source-badge', ['article' => $article])->render();
@@ -52,7 +52,7 @@ class TemplateRenderer
             '{{date}}' => optional($page->published_at)->translatedFormat('d F Y') ?? '',
         ];
 
-        $html = strtr($template->html ?? '', $replacements);
+        $html = $this->stripUnresolvedPlaceholders(strtr($template->html ?? '', $replacements));
 
         return $this->wrapWithStyle($html, $template->css);
     }
@@ -146,6 +146,21 @@ class TemplateRenderer
         }
 
         return '<style>'.$css.'</style>'.$html;
+    }
+
+    /**
+     * A template built for the wrong content type (e.g. an article template
+     * assigned to a page) can reference a placeholder we never substitute
+     * (e.g. {{author}} on a Page). Rather than leaking the raw token to
+     * visitors, drop any of our known placeholders left unresolved.
+     */
+    private function stripUnresolvedPlaceholders(string $html): string
+    {
+        return str_replace(
+            ['{{title}}', '{{featured_image}}', '{{content}}', '{{date}}', '{{author}}'],
+            '',
+            $html,
+        );
     }
 
     /**

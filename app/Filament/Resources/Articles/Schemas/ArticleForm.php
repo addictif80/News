@@ -9,7 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -66,7 +65,11 @@ class ArticleForm
                                     ->preload(),
                                 Select::make('template_id')
                                     ->label('Template')
-                                    ->relationship('template', 'name')
+                                    ->relationship(
+                                        'template',
+                                        'name',
+                                        modifyQueryUsing: fn ($query) => $query->where('type', 'article'),
+                                    )
                                     ->searchable()
                                     ->preload(),
                             ]),
