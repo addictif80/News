@@ -12,7 +12,7 @@ class HomeController extends Controller
         return view('site.layouts.app', [
             'content' => $renderer->renderHomepage(),
             'seoTitle' => config('app.name'),
-            'showGlobalBanner' => false,
+            'showGlobalBanner' => ! $renderer->homepageHandlesOwnAlertBanner(),
         ]);
     }
 }

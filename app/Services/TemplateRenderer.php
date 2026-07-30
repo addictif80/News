@@ -106,6 +106,19 @@ class TemplateRenderer
         return $this->wrapWithStyle($html, $template->css);
     }
 
+    /**
+     * Whether the active homepage template already places the alert-banner
+     * block itself, so callers can avoid rendering the sitewide banner twice.
+     */
+    public function homepageHandlesOwnAlertBanner(): bool
+    {
+        $template = $this->defaultTemplate('homepage');
+
+        return $template
+            && filled($template->html)
+            && str_contains($template->html, 'data-block="alert-banner"');
+    }
+
     private function renderArticleCardGrid(?string $categorySlug, int $columns, int $rows): string
     {
         $query = Article::query()->published()->latest('published_at');

@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/template-builder.css',
                 'resources/js/template-builder.js',
+                'resources/js/site-popup.js',
             ],
             refresh: true,
             fonts: [
