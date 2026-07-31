@@ -41,10 +41,10 @@ class ManageWebPushSettings extends SettingsPage
                 ->action(function () {
                     $keys = VAPID::createVapidKeys();
 
-                    $this->form->fill(array_merge($this->form->getState(), [
-                        'public_key' => $keys['publicKey'],
-                        'private_key' => $keys['privateKey'],
-                    ]));
+                    $this->data['public_key'] = $keys['publicKey'];
+                    $this->data['private_key'] = $keys['privateKey'];
+
+                    $this->form->fill($this->data);
 
                     Notification::make()
                         ->title('Nouvelles clés VAPID générées — pense à enregistrer.')

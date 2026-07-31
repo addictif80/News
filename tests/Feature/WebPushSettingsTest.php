@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Pages\ManageWebPushSettings;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Minishlink\WebPush\VAPID;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -22,6 +24,21 @@ class WebPushSettingsTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Notifications push');
+    }
+
+    public function test_generate_vapid_keys_action_fills_empty_keys_without_validation_errors(): void
+    {
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        Livewire::actingAs($admin)
+            ->test(ManageWebPushSettings::class)
+            ->assertFormSet(['public_key' => '', 'private_key' => ''])
+            ->callAction('generateVapidKeys')
+            ->assertHasNoFormErrors()
+            ->assertNotSet('data.public_key', '')
+            ->assertNotSet('data.private_key', '');
     }
 
     public function test_it_can_generate_a_valid_vapid_keypair(): void
