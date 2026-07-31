@@ -50,7 +50,7 @@ self.addEventListener('push', (event) => {
             body: payload.body || '',
             icon: payload.icon || '/icons/icon-192.png',
             badge: '/icons/icon-192.png',
-            data: { url: payload.url || '/' },
+            data: { url: payload.data?.url || payload.url || '/' },
         })
     );
 });

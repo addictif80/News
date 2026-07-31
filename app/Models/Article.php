@@ -19,6 +19,7 @@ class Article extends Model
         'featured_image', 'status', 'published_at', 'views_count',
         'seo_title', 'seo_description', 'seo_og_image', 'canonical_url',
         'is_imported', 'source_site_id', 'source_url', 'requires_admin_validation',
+        'notify_all', 'notify_free', 'notify_subscribers',
     ];
 
     protected function casts(): array
@@ -27,6 +28,9 @@ class Article extends Model
             'published_at' => 'datetime',
             'is_imported' => 'boolean',
             'requires_admin_validation' => 'boolean',
+            'notify_all' => 'boolean',
+            'notify_free' => 'boolean',
+            'notify_subscribers' => 'boolean',
         ];
     }
 

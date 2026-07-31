@@ -8,6 +8,8 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -52,6 +54,13 @@ class PageForm
                 Textarea::make('seo_description')->label('Meta description')->rows(2),
                 FileUpload::make('seo_og_image')->label('Image Open Graph')->image()->directory('seo'),
                 TextInput::make('canonical_url')->label('URL canonique')->url(),
+                Section::make('Notifications')
+                    ->description("Envoie une notification push à l'enregistrement si la page est publiée. Les cases se décochent automatiquement après l'envoi.")
+                    ->schema([
+                        Toggle::make('notify_all')->label('Notifier tous les membres'),
+                        Toggle::make('notify_free')->label('Notifier les membres gratuits'),
+                        Toggle::make('notify_subscribers')->label('Notifier les abonnés'),
+                    ]),
             ]);
     }
 }

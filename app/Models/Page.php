@@ -14,12 +14,16 @@ class Page extends Model
     protected $fillable = [
         'template_id', 'title', 'slug', 'featured_image', 'content', 'status', 'published_at',
         'seo_title', 'seo_description', 'seo_og_image', 'canonical_url',
+        'notify_all', 'notify_free', 'notify_subscribers',
     ];
 
     protected function casts(): array
     {
         return [
             'published_at' => 'datetime',
+            'notify_all' => 'boolean',
+            'notify_free' => 'boolean',
+            'notify_subscribers' => 'boolean',
         ];
     }
 

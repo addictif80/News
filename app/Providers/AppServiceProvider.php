@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Article;
+use App\Models\Page;
+use App\Observers\ArticleObserver;
+use App\Observers\PageObserver;
 use App\Settings\SmtpSettings;
 use App\Settings\StripeSettings;
 use App\Settings\WebPushSettings;
@@ -27,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDynamicMailer();
         $this->configureDynamicStripe();
         $this->configureDynamicWebPush();
+
+        Article::observe(ArticleObserver::class);
+        Page::observe(PageObserver::class);
     }
 
     private function configureDynamicMailer(): void

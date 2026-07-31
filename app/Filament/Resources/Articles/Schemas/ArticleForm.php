@@ -94,6 +94,16 @@ class ArticleForm
                                 FileUpload::make('seo_og_image')->label('Image Open Graph')->image()->directory('seo'),
                                 TextInput::make('canonical_url')->label('URL canonique')->url(),
                             ]),
+                        Tab::make('Notifications')
+                            ->schema([
+                                Toggle::make('notify_all')
+                                    ->label('Notifier tous les membres')
+                                    ->helperText("Envoie une notification push à l'enregistrement si l'article est publié. La case se décoche automatiquement après l'envoi."),
+                                Toggle::make('notify_free')
+                                    ->label('Notifier les membres gratuits'),
+                                Toggle::make('notify_subscribers')
+                                    ->label('Notifier les abonnés'),
+                            ]),
                         Tab::make('Import externe')
                             ->schema([
                                 Toggle::make('is_imported')->label('Article importé'),
