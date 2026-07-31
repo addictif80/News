@@ -12,5 +12,12 @@
         @endif
         <span class="article-date">{{ optional($article->published_at)->translatedFormat('d F Y') }}</span>
     </p>
-    <div class="article-content">{!! $article->content !!}</div>
+    @if($isLocked ?? false)
+        <div class="article-content">
+            <p>{{ $article->previewContent() }}</p>
+            @include('site.partials.paywall')
+        </div>
+    @else
+        <div class="article-content">{!! $article->content !!}</div>
+    @endif
 </article>

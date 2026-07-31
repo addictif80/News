@@ -46,6 +46,20 @@ class ArticlesTable
                         'published' => 'success',
                         default => 'gray',
                     }),
+                TextColumn::make('access_level')
+                    ->label('Accès')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'free' => 'Membres',
+                        'subscribers' => 'Abonnés',
+                        default => 'Public',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'free' => 'warning',
+                        'subscribers' => 'danger',
+                        default => 'gray',
+                    })
+                    ->toggleable(),
                 IconColumn::make('is_imported')
                     ->label('Importé')
                     ->boolean(),

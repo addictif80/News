@@ -86,6 +86,16 @@ class ArticleForm
                                     ->required(),
                                 DateTimePicker::make('published_at')
                                     ->label('Date de publication'),
+                                Select::make('access_level')
+                                    ->label('Accès')
+                                    ->options([
+                                        'public' => 'Public (tout le monde)',
+                                        'free' => 'Réservé aux membres inscrits',
+                                        'subscribers' => 'Réservé aux abonnés payants',
+                                    ])
+                                    ->default('public')
+                                    ->required()
+                                    ->helperText("Les visiteurs n'ayant pas le niveau d'accès requis verront un extrait de l'article suivi d'une invitation à s'inscrire ou s'abonner."),
                             ]),
                         Tab::make('SEO')
                             ->schema([

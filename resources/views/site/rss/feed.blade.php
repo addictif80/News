@@ -20,7 +20,7 @@
                     <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/"><![CDATA[{{ $article->author->name }}]]></dc:creator>
                 @endif
                 <description><![CDATA[{{ $article->excerpt }}]]></description>
-                <content:encoded><![CDATA[{{ $article->content }}]]></content:encoded>
+                <content:encoded><![CDATA[{!! $article->access_level === 'public' ? $article->content : '<p>'.$article->previewContent().'</p>' !!}]]></content:encoded>
                 @if($article->featured_image_url)
                     <enclosure url="{{ $article->featured_image_url }}" type="image/jpeg" />
                 @endif

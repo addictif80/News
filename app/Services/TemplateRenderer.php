@@ -14,15 +14,16 @@ class TemplateRenderer
     public function renderArticle(Article $article): string
     {
         $template = $article->template ?? $this->defaultTemplate('article');
+        $isLocked = ! $article->isAccessibleBy(auth()->user());
 
         if (! $template || blank($template->html)) {
-            return view('site.fallback.article', ['article' => $article])->render();
+            return view('site.fallback.article', ['article' => $article, 'isLocked' => $isLocked])->render();
         }
 
         $replacements = [
             '{{title}}' => e($article->title),
             '{{featured_image}}' => $article->featured_image_url ?? '',
-            '{{content}}' => $article->content ?? '',
+            '{{content}}' => $this->resolveArticleContent($article, $isLocked),
             '{{date}}' => optional($article->published_at)->translatedFormat('d F Y') ?? '',
             '{{author}}' => $article->author?->name ?? '',
         ];
@@ -35,6 +36,16 @@ class TemplateRenderer
         }
 
         return $this->wrapWithStyle($html, $template->css);
+    }
+
+    private function resolveArticleContent(Article $article, bool $isLocked): string
+    {
+        if (! $isLocked) {
+            return $article->content ?? '';
+        }
+
+        return '<p>'.e($article->previewContent()).'</p>'
+            .view('site.partials.paywall', ['article' => $article])->render();
     }
 
     public function renderPage(Page $page): string

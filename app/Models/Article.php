@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -16,7 +17,7 @@ class Article extends Model
 
     protected $fillable = [
         'category_id', 'author_id', 'template_id', 'title', 'slug', 'excerpt', 'content',
-        'featured_image', 'status', 'published_at', 'views_count',
+        'featured_image', 'status', 'access_level', 'published_at', 'views_count',
         'seo_title', 'seo_description', 'seo_og_image', 'canonical_url',
         'is_imported', 'source_site_id', 'source_url', 'requires_admin_validation',
         'notify_all', 'notify_free', 'notify_subscribers',
@@ -79,6 +80,24 @@ class Article extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published')->where('published_at', '<=', now());
+    }
+
+    public function isAccessibleBy(?User $user): bool
+    {
+        if ($user?->hasAnyRole(['admin', 'moderateur'])) {
+            return true;
+        }
+
+        return match ($this->access_level) {
+            'subscribers' => (bool) $user?->hasRole('abonne'),
+            'free' => $user !== null,
+            default => true,
+        };
+    }
+
+    public function previewContent(int $words = 60): string
+    {
+        return Str::words(trim(strip_tags($this->content ?? '')), $words);
     }
 
     protected function featuredImageUrl(): Attribute
