@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\WidgetController;
@@ -30,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/abonnement', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
     Route::get('/abonnement/portail', [SubscriptionController::class, 'portal'])->name('subscription.portal');
     Route::get('/abonnement/confirmation', [SubscriptionController::class, 'success'])->name('subscription.success');
+
+    Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 });
 
 Route::get('/login', [LoginController::class, 'create'])->name('login')->middleware('guest');
