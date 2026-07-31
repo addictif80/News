@@ -1,6 +1,6 @@
 <div class="auth-widget">
     @auth
-        <span>Bonjour, {{ auth()->user()->name }}</span>
+        <a href="{{ route('account.edit') }}">Bonjour, {{ auth()->user()->name }}</a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit">Déconnexion</button>

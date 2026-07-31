@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -30,10 +31,17 @@ Route::get('/manifest.json', [PwaController::class, 'manifest'])->name('pwa.mani
 Route::middleware('auth')->group(function () {
     Route::get('/abonnement', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
     Route::get('/abonnement/portail', [SubscriptionController::class, 'portal'])->name('subscription.portal');
+    Route::post('/abonnement/resilier', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
     Route::get('/abonnement/confirmation', [SubscriptionController::class, 'success'])->name('subscription.success');
 
     Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
     Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
+
+    Route::get('/compte', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/compte', [AccountController::class, 'update'])->name('account.update');
+    Route::post('/compte/interets', [AccountController::class, 'updateInterests'])->name('account.interests');
+    Route::get('/compte/export', [AccountController::class, 'export'])->name('account.export');
+    Route::delete('/compte', [AccountController::class, 'destroy'])->name('account.destroy');
 });
 
 Route::get('/login', [LoginController::class, 'create'])->name('login')->middleware('guest');

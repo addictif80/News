@@ -18,7 +18,7 @@ class SubscriptionController extends Controller
         $checkout = $user->newSubscription('default', config('services.stripe.price_id'))
             ->checkout([
                 'success_url' => route('subscription.success'),
-                'cancel_url' => route('home'),
+                'cancel_url' => route('account.edit'),
             ]);
 
         return redirect($checkout->url);
@@ -26,11 +26,23 @@ class SubscriptionController extends Controller
 
     public function portal(Request $request): RedirectResponse
     {
-        return $request->user()->redirectToBillingPortal(route('home'));
+        return $request->user()->redirectToBillingPortal(route('account.edit'));
+    }
+
+    public function cancel(Request $request): RedirectResponse
+    {
+        $subscription = $request->user()->subscription('default');
+
+        if ($subscription && ! $subscription->canceled()) {
+            $subscription->cancel();
+        }
+
+        return redirect()->route('account.edit')
+            ->with('status', "Abonnement résilié — il reste actif jusqu'à la fin de la période déjà payée.");
     }
 
     public function success(): RedirectResponse
     {
-        return redirect()->route('home')->with('status', 'Abonnement activé, merci !');
+        return redirect()->route('account.edit')->with('status', 'Abonnement activé, merci !');
     }
 }
