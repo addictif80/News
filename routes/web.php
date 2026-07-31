@@ -10,6 +10,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\PwaController;
+use App\Http\Controllers\RssController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\WidgetController;
@@ -28,6 +29,9 @@ Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'uns
 Route::get('/widgets/{token}.js', [WidgetController::class, 'script'])->name('widgets.script');
 
 Route::get('/manifest.json', [PwaController::class, 'manifest'])->name('pwa.manifest');
+
+Route::get('/rss.xml', [RssController::class, 'index'])->name('rss.index');
+Route::get('/categories/{category:slug}/rss.xml', [RssController::class, 'category'])->name('rss.category');
 
 Route::middleware('auth')->group(function () {
     Route::get('/abonnement', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');

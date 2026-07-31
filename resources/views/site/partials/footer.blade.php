@@ -10,5 +10,6 @@
 
     <div class="site-footer__bottom">
         <span>&copy; {{ now()->year }} {{ $generalSettings->site_name }}</span>
+        <a href="{{ route('rss.index') }}">Flux RSS</a>
     </div>
 </footer>
