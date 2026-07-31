@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([RoleSeeder::class, PermissionSeeder::class]);
+        $this->call([RoleSeeder::class, ShieldPermissionsSeeder::class, PermissionSeeder::class]);
 
         if (User::where('email', 'admin@example.com')->exists()) {
             return;

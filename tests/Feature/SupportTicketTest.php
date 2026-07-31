@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -23,7 +24,12 @@ class SupportTicketTest extends TestCase
 
     private function moderator(): User
     {
-        Role::firstOrCreate(['name' => 'moderateur', 'guard_name' => 'web']);
+        $role = Role::firstOrCreate(['name' => 'moderateur', 'guard_name' => 'web']);
+        $role->givePermissionTo([
+            Permission::firstOrCreate(['name' => 'View:SupportTicket', 'guard_name' => 'web']),
+            Permission::firstOrCreate(['name' => 'Update:SupportTicket', 'guard_name' => 'web']),
+        ]);
+
         $user = User::factory()->create();
         $user->assignRole('moderateur');
 

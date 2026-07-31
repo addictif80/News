@@ -15,7 +15,7 @@ class PermissionSeeder extends Seeder
     private array $moderatorResources = [
         'Article', 'Page', 'Category', 'Tag', 'Author', 'Comment',
         'AlertBanner', 'PopupModal', 'NewsletterSubscriber', 'NewsletterCampaign',
-        'Widget', 'SourceSite', 'Keyword',
+        'Widget', 'SourceSite', 'Keyword', 'SupportCategory', 'SupportTicket',
     ];
 
     public function run(): void
