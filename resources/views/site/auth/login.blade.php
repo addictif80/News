@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
+    @include('site.partials.head-meta')
     <title>Connexion</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-body">
     <form method="POST" action="{{ route('login') }}" class="auth-form">

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('site.partials.head-meta')
     <title>{{ $seoTitle ?? config('app.name') }}</title>
     @if(!empty($seoDescription))
         <meta name="description" content="{{ $seoDescription }}">
@@ -13,7 +12,7 @@
     @if(!empty($ogImage))
         <meta property="og:image" content="{{ $ogImage }}">
     @endif
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="site-body">
     @include('site.partials.header')

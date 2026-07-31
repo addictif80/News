@@ -688,3 +688,109 @@ a {
 .news-widget--dark .news-widget__item span {
     color: #f4f4f5;
 }
+
+/* ---------- PWA install banner (iOS) ---------- */
+
+.ios-install-banner {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: var(--color-brand-navy);
+    color: #f4f4f5;
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    font-size: 0.8125rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.ios-install-banner button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #f4f4f5;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 48rem) {
+    .site-header__bar {
+        flex-wrap: wrap;
+        padding: 1.1rem 1.25rem 0.9rem;
+    }
+
+    .site-header__brand {
+        font-size: 1.625rem;
+    }
+
+    .site-main {
+        padding: 1.75rem 1.25rem 2.5rem;
+    }
+
+    .article-card:first-child {
+        grid-template-columns: 1fr;
+    }
+
+    .article-card:first-child img {
+        min-height: 12rem;
+    }
+
+    .article-card:first-child h3 {
+        font-size: 1.375rem;
+    }
+
+    .article-title,
+    .page-title {
+        font-size: 1.625rem;
+    }
+
+    .article-content,
+    .page-content {
+        font-size: 1rem;
+    }
+
+    .article-fallback,
+    .page-fallback {
+        padding: 1.5rem;
+    }
+
+    .auth-form {
+        margin: 2rem auto;
+        padding: 1.75rem;
+        width: calc(100% - 2rem);
+    }
+
+    .site-footer__newsletter {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-footer__newsletter .newsletter-signup {
+        width: 100%;
+    }
+
+    .site-footer__bottom {
+        flex-direction: column;
+    }
+
+    .site-popup__content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 30rem) {
+    .article-card-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .site-header__meta-bar span:last-child {
+        display: none;
+    }
+}
