@@ -85,7 +85,8 @@ class ArticleForm
                                     ->default('draft')
                                     ->required(),
                                 DateTimePicker::make('published_at')
-                                    ->label('Date de publication'),
+                                    ->label('Date de publication')
+                                    ->helperText("Laisser vide pour publier immédiatement — la date sera renseignée automatiquement à l'enregistrement si le statut est « Publié »."),
                                 Select::make('access_level')
                                     ->label('Accès')
                                     ->options([

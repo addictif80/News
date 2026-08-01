@@ -47,6 +47,35 @@ class PublicSiteSmokeTest extends TestCase
         $response->assertSee('Un article publié');
     }
 
+    public function test_article_published_without_explicit_date_still_appears_on_homepage(): void
+    {
+        Template::create([
+            'type' => 'homepage',
+            'name' => 'Accueil',
+            'is_default' => true,
+            'html' => '<div data-block="article-card-grid" data-columns="3" data-rows="2"></div>',
+            'css' => '',
+        ]);
+
+        $category = Category::create(['name' => 'Sport', 'slug' => 'sport']);
+
+        $article = Article::create([
+            'category_id' => $category->id,
+            'title' => 'Article sans date choisie',
+            'slug' => 'article-sans-date-choisie',
+            'excerpt' => 'Résumé',
+            'content' => '<p>Contenu</p>',
+            'status' => 'published',
+        ]);
+
+        $this->assertNotNull($article->fresh()->published_at);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Article sans date choisie');
+    }
+
     public function test_article_page_renders_with_default_template(): void
     {
         Template::create([

@@ -35,6 +35,15 @@ class Article extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Article $article) {
+            if ($article->status === 'published' && blank($article->published_at)) {
+                $article->published_at = now();
+            }
+        });
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
