@@ -59,6 +59,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // Forces the MySQL session to UTC so TIMESTAMP columns (e.g. published_at)
+            // are written/read consistently with app.timezone, regardless of the
+            // database server's own configured timezone.
+            'timezone' => '+00:00',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
@@ -79,6 +83,10 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // Forces the MySQL session to UTC so TIMESTAMP columns (e.g. published_at)
+            // are written/read consistently with app.timezone, regardless of the
+            // database server's own configured timezone.
+            'timezone' => '+00:00',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
