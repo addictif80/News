@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Pages;
 
+use App\Exceptions\DuplicateImportException;
 use App\Filament\Resources\Articles\ArticleResource;
 use App\Services\ArticleImportService;
 use Filament\Actions\Action;
@@ -36,6 +37,12 @@ class ListArticles extends ListRecords
                             ->title('Article importé : '.$article->title)
                             ->body('En attente de validation avant publication.')
                             ->success()
+                            ->send();
+                    } catch (DuplicateImportException $e) {
+                        Notification::make()
+                            ->title('Article déjà importé')
+                            ->body($e->getMessage())
+                            ->warning()
                             ->send();
                     } catch (\Throwable $e) {
                         Notification::make()

@@ -2,40 +2,91 @@
 
 namespace App\Services;
 
+use App\Exceptions\DuplicateImportException;
 use App\Models\Article;
+use App\Models\ImportLogEntry;
 use App\Models\SourceSite;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use RuntimeException;
+use Throwable;
 
 class ArticleImportService
 {
-    public function importFromUrl(string $url): Article
+    /**
+     * @throws DuplicateImportException when an article for this URL (or a
+     *                                  near-identical title) already exists — the duplicate is logged
+     *                                  before the exception is thrown.
+     */
+    public function importFromUrl(string $url, ?string $keyword = null): Article
     {
-        $response = Http::timeout(15)->withHeaders([
-            'User-Agent' => 'Mozilla/5.0 (compatible; NewsImportBot/1.0)',
-        ])->get($url);
+        try {
+            if ($existing = Article::where('source_url', $url)->first()) {
+                $this->log($url, $keyword, 'duplicate', "URL déjà importée (article #{$existing->id})", $existing);
 
-        if ($response->failed()) {
-            throw new RuntimeException("Impossible de récupérer l'URL : {$response->status()}");
+                throw new DuplicateImportException($existing, "Cette URL a déjà été importée : « {$existing->title} ».");
+            }
+
+            $response = Http::timeout(15)->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (compatible; NewsImportBot/1.0)',
+            ])->get($url);
+
+            if ($response->failed()) {
+                throw new RuntimeException("Impossible de récupérer l'URL : {$response->status()}");
+            }
+
+            $extracted = $this->extract($response->body(), $url);
+
+            $titleSlug = Str::slug($extracted['title']);
+            if ($titleSlug !== '' && ($existing = Article::where('slug', $titleSlug)->orWhere('slug', 'like', "{$titleSlug}-%")->first())) {
+                $this->log($url, $keyword, 'duplicate', "Titre très proche d'un article existant : « {$existing->title} » (#{$existing->id})", $existing);
+
+                throw new DuplicateImportException($existing, "Un article au titre très proche existe déjà : « {$existing->title} ».");
+            }
+
+            $sourceSite = $this->resolveSourceSite($url, $extracted['site_name']);
+
+            $article = Article::create([
+                'title' => $extracted['title'],
+                'excerpt' => $extracted['excerpt'],
+                'content' => $extracted['content'],
+                'featured_image' => $extracted['image'],
+                'status' => 'pending_review',
+                'is_imported' => true,
+                'source_site_id' => $sourceSite->id,
+                'source_url' => $url,
+                'requires_admin_validation' => true,
+            ]);
+
+            $this->log($url, $keyword, 'imported', null, $article, $sourceSite);
+
+            return $article;
+        } catch (DuplicateImportException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->log($url, $keyword, 'error', $e->getMessage());
+
+            throw $e;
         }
+    }
 
-        $extracted = $this->extract($response->body(), $url);
-
-        $sourceSite = $this->resolveSourceSite($url, $extracted['site_name']);
-
-        return Article::create([
-            'title' => $extracted['title'],
-            'excerpt' => $extracted['excerpt'],
-            'content' => $extracted['content'],
-            'featured_image' => $extracted['image'],
-            'status' => 'pending_review',
-            'is_imported' => true,
-            'source_site_id' => $sourceSite->id,
-            'source_url' => $url,
-            'requires_admin_validation' => true,
+    private function log(
+        string $url,
+        ?string $keyword,
+        string $outcome,
+        ?string $message,
+        ?Article $article = null,
+        ?SourceSite $sourceSite = null,
+    ): void {
+        ImportLogEntry::create([
+            'source_site_id' => $sourceSite?->id ?? $article?->source_site_id,
+            'article_id' => $article?->id,
+            'keyword' => $keyword,
+            'url' => $url,
+            'outcome' => $outcome,
+            'message' => $message,
         ]);
     }
 

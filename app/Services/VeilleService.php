@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Article;
+use App\Exceptions\DuplicateImportException;
 use App\Models\Keyword;
 use App\Models\SourceSite;
 use App\Settings\VeilleSettings;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Throwable;
 
 class VeilleService
 {
@@ -77,18 +78,20 @@ class VeilleService
         foreach ($items as $item) {
             $haystack = Str::lower($item['title'].' '.$item['description']);
 
-            $matches = $keywords->contains(fn (string $keyword) => str_contains($haystack, Str::lower($keyword)));
+            $matchedKeyword = $keywords->first(fn (string $keyword) => str_contains($haystack, Str::lower($keyword)));
 
-            if (! $matches) {
+            if ($matchedKeyword === null) {
                 continue;
             }
 
-            if (Article::where('source_url', $item['link'])->exists()) {
-                continue;
+            try {
+                $this->importer->importFromUrl($item['link'], $matchedKeyword);
+                $imported++;
+            } catch (DuplicateImportException) {
+                // Already recorded in the import journal by the importer.
+            } catch (Throwable) {
+                // Same — logged by the importer; keep polling the rest of the feed.
             }
-
-            $this->importer->importFromUrl($item['link']);
-            $imported++;
         }
 
         return $imported;
