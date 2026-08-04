@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources\Articles\Tables;
 
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ArticlesTable
 {
@@ -111,6 +115,21 @@ class ArticlesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                BulkAction::make('publishSelection')
+                    ->label('Publier la sélection')
+                    ->icon(Heroicon::OutlinedCheckCircle)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalDescription("Chaque article sera publié immédiatement (date de publication réglée sur maintenant s'il n'en avait pas).")
+                    ->action(function (Collection $records) {
+                        $records->each->update(['status' => 'published']);
+
+                        Notification::make()
+                            ->title($records->count().' article(s) publié(s)')
+                            ->success()
+                            ->send();
+                    })
+                    ->deselectRecordsAfterCompletion(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
