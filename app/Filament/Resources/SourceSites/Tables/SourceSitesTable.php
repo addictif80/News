@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SourceSites\Tables;
 
+use App\Models\Keyword;
 use App\Models\SourceSite;
 use App\Services\VeilleService;
 use Filament\Actions\Action;
@@ -54,13 +55,13 @@ class SourceSitesTable
                     ->icon(Heroicon::OutlinedArrowPath)
                     ->visible(fn (SourceSite $record) => filled($record->rss_feed_url))
                     ->action(function (SourceSite $record, VeilleService $veille) {
+                        if (self::warnIfNoActiveKeyword()) {
+                            return;
+                        }
+
                         $result = $veille->pollNow(collect([$record]));
 
-                        Notification::make()
-                            ->title('Vérification terminée')
-                            ->body("{$result['imported']} article(s) importé(s).")
-                            ->success()
-                            ->send();
+                        self::notifyResult($result);
                     }),
                 ViewAction::make(),
                 EditAction::make(),
@@ -70,18 +71,46 @@ class SourceSitesTable
                     ->label('Vérifier la sélection')
                     ->icon(Heroicon::OutlinedArrowPath)
                     ->action(function (Collection $records, VeilleService $veille) {
-                        $result = $veille->pollNow($records);
+                        if (self::warnIfNoActiveKeyword()) {
+                            return;
+                        }
 
-                        Notification::make()
-                            ->title('Vérification terminée')
-                            ->body("{$result['polled']} site(s) vérifié(s), {$result['imported']} article(s) importé(s).")
-                            ->success()
-                            ->send();
+                        self::notifyResult($veille->pollNow($records));
                     })
                     ->deselectRecordsAfterCompletion(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * @return bool true if a warning was shown (caller should stop)
+     */
+    public static function warnIfNoActiveKeyword(): bool
+    {
+        if (Keyword::query()->where('is_active', true)->exists()) {
+            return false;
+        }
+
+        Notification::make()
+            ->title('Aucun mot-clé actif')
+            ->body('La veille ne récupère un article que si son titre ou sa description contient au moins un mot-clé actif. Ajoute-en un dans « Veille informationnelle > Mots-clés ».')
+            ->warning()
+            ->send();
+
+        return true;
+    }
+
+    /**
+     * @param  array{polled: int, imported: int}  $result
+     */
+    public static function notifyResult(array $result): void
+    {
+        Notification::make()
+            ->title('Vérification terminée')
+            ->body("{$result['polled']} site(s) vérifié(s), {$result['imported']} article(s) importé(s). Détail dans « Journal de veille ».")
+            ->success()
+            ->send();
     }
 }

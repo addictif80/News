@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\SourceSites\Pages;
 
 use App\Filament\Resources\SourceSites\SourceSiteResource;
+use App\Filament\Resources\SourceSites\Tables\SourceSitesTable;
 use App\Models\SourceSite;
 use App\Services\VeilleService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
 
@@ -23,19 +23,17 @@ class ListSourceSites extends ListRecords
                 ->icon(Heroicon::OutlinedArrowPath)
                 ->requiresConfirmation()
                 ->action(function (VeilleService $veille) {
+                    if (SourceSitesTable::warnIfNoActiveKeyword()) {
+                        return;
+                    }
+
                     $sites = SourceSite::query()
                         ->where('is_active', true)
                         ->where('used_for_watch', true)
                         ->whereNotNull('rss_feed_url')
                         ->get();
 
-                    $result = $veille->pollNow($sites);
-
-                    Notification::make()
-                        ->title('Vérification terminée')
-                        ->body("{$result['polled']} site(s) vérifié(s), {$result['imported']} article(s) importé(s).")
-                        ->success()
-                        ->send();
+                    SourceSitesTable::notifyResult($veille->pollNow($sites));
                 }),
             CreateAction::make(),
         ];

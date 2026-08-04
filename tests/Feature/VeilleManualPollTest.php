@@ -127,6 +127,28 @@ class VeilleManualPollTest extends TestCase
         $this->assertSame(1, Article::count());
     }
 
+    public function test_polling_without_an_active_keyword_warns_instead_of_silently_importing_nothing(): void
+    {
+        $admin = $this->admin();
+
+        $site = SourceSite::create([
+            'name' => 'Exemple Actu',
+            'base_url' => 'https://feed.example.com',
+            'rss_feed_url' => 'https://feed.example.com/rss.xml',
+            'is_active' => true,
+            'used_for_watch' => true,
+        ]);
+
+        $this->fakeFeedAndArticle();
+
+        Livewire::actingAs($admin)
+            ->test(ListSourceSites::class)
+            ->callTableAction('pollNow', $site)
+            ->assertNotified('Aucun mot-clé actif');
+
+        $this->assertSame(0, Article::count());
+    }
+
     public function test_feed_discovery_action_fills_the_rss_field(): void
     {
         $admin = $this->admin();
