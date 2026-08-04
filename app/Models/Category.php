@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Concerns\LogsActivity;
 use App\Support\ContentCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Category extends Model
 {
-    use HasSlug;
+    use HasSlug, LogsActivity;
 
     protected $fillable = [
         'name', 'slug', 'description', 'is_featured_on_homepage', 'position',

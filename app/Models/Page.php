@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Sluggable\HasSlug;
@@ -9,7 +10,9 @@ use Spatie\Sluggable\SlugOptions;
 
 class Page extends Model
 {
-    use HasSlug;
+    use HasSlug, LogsActivity;
+
+    protected array $activityLogExcept = ['content'];
 
     protected $fillable = [
         'template_id', 'title', 'slug', 'featured_image', 'content', 'status', 'published_at',

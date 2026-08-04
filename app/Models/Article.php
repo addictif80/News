@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Concerns\LogsActivity;
 use App\Support\ContentCache;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -14,9 +15,11 @@ use Spatie\Sluggable\SlugOptions;
 
 class Article extends Model
 {
-    use HasSlug;
+    use HasSlug, LogsActivity;
 
     private const MAX_REVISIONS = 20;
+
+    protected array $activityLogExcept = ['content', 'views_count'];
 
     protected $fillable = [
         'category_id', 'author_id', 'template_id', 'title', 'slug', 'excerpt', 'content',

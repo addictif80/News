@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Support\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SupportTicket extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'user_id', 'support_category_id', 'subject', 'status', 'priority', 'last_activity_at',
     ];
