@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ContentCache;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,16 @@ class Article extends Model
                 $article->published_at = now();
             }
         });
+
+        // views_count changes on every page view via increment(); excluding it here
+        // keeps a routine visit from invalidating the homepage/RSS cache.
+        static::saved(function (Article $article) {
+            if ($article->wasRecentlyCreated || $article->wasChanged(array_diff($article->getFillable(), ['views_count']))) {
+                ContentCache::bump();
+            }
+        });
+
+        static::deleted(fn () => ContentCache::bump());
     }
 
     public function getRouteKeyName(): string

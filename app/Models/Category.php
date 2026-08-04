@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ContentCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
@@ -14,6 +15,12 @@ class Category extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'is_featured_on_homepage', 'position',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => ContentCache::bump());
+        static::deleted(fn () => ContentCache::bump());
+    }
 
     protected function casts(): array
     {

@@ -6,8 +6,10 @@ use App\Models\AlertBanner;
 use App\Models\Article;
 use App\Models\Page;
 use App\Models\Template;
+use App\Support\ContentCache;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Support\Facades\Cache;
 
 class TemplateRenderer
 {
@@ -73,7 +75,9 @@ class TemplateRenderer
         $template = $this->defaultTemplate('homepage');
 
         if (! $template || blank($template->html)) {
-            return view('site.fallback.homepage')->render();
+            return view('site.fallback.homepage', [
+                'grid' => $this->renderArticleCardGrid(null, 3, 3),
+            ])->render();
         }
 
         $dom = new DOMDocument;
@@ -132,18 +136,22 @@ class TemplateRenderer
 
     private function renderArticleCardGrid(?string $categorySlug, int $columns, int $rows): string
     {
-        $query = Article::query()->published()->latest('published_at');
+        $key = 'homepage:grid:'.ContentCache::version().':'.($categorySlug ?: 'all').":{$columns}:{$rows}";
 
-        if (filled($categorySlug)) {
-            $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
-        }
+        return Cache::remember($key, now()->addMinutes(5), function () use ($categorySlug, $columns, $rows) {
+            $query = Article::query()->published()->latest('published_at');
 
-        $articles = $query->limit(max(1, $columns * $rows))->get();
+            if (filled($categorySlug)) {
+                $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
+            }
 
-        return view('site.blocks.article-card-grid', [
-            'articles' => $articles,
-            'columns' => $columns,
-        ])->render();
+            $articles = $query->limit(max(1, $columns * $rows))->get();
+
+            return view('site.blocks.article-card-grid', [
+                'articles' => $articles,
+                'columns' => $columns,
+            ])->render();
+        });
     }
 
     private function renderAlertBanner(): string
