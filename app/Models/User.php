@@ -17,7 +17,7 @@ use Laravel\Cashier\Billable;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'avatar', 'deleted_data_at'])]
+#[Fillable(['name', 'email', 'password', 'avatar', 'deleted_data_at', 'is_comment_banned'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser
 {
@@ -35,6 +35,7 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_data_at' => 'datetime',
+            'is_comment_banned' => 'boolean',
         ];
     }
 

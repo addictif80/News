@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
 
@@ -34,6 +35,9 @@ class UserForm
                     ->multiple()
                     ->preload()
                     ->searchable(),
+                Toggle::make('is_comment_banned')
+                    ->label('Bloqué pour les commentaires')
+                    ->helperText('Empêche cet utilisateur de poster de nouveaux commentaires.'),
             ]);
     }
 }
