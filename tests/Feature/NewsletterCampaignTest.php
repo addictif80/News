@@ -44,8 +44,8 @@ class NewsletterCampaignTest extends TestCase
 
         (new SendNewsletterCampaignJob($campaign))->handle();
 
-        Mail::assertSent(NewsletterMail::class, 1);
-        Mail::assertSent(NewsletterMail::class, fn (NewsletterMail $mail) => $mail->hasTo($confirmed->email));
+        Mail::assertQueued(NewsletterMail::class, 1);
+        Mail::assertQueued(NewsletterMail::class, fn (NewsletterMail $mail) => $mail->hasTo($confirmed->email));
 
         $this->assertSame('sent', $campaign->fresh()->status);
         $this->assertSame(1, $campaign->fresh()->recipients_count);

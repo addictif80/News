@@ -17,19 +17,24 @@ class SendNewsletterCampaignJob implements ShouldQueue
 
     public function handle(): void
     {
-        $subscribers = NewsletterSubscriber::query()
+        $recipientsCount = 0;
+
+        NewsletterSubscriber::query()
             ->where('is_confirmed', true)
             ->whereNull('unsubscribed_at')
-            ->get();
-
-        foreach ($subscribers as $subscriber) {
-            Mail::to($subscriber->email)->send(new NewsletterMail($this->campaign, $subscriber));
-        }
+            ->chunkById(200, function ($subscribers) use (&$recipientsCount) {
+                foreach ($subscribers as $subscriber) {
+                    // Each email becomes its own queued job so one bad address
+                    // (SMTP timeout, bounce) can't block or retry the whole batch.
+                    Mail::to($subscriber->email)->queue(new NewsletterMail($this->campaign, $subscriber));
+                    $recipientsCount++;
+                }
+            });
 
         $this->campaign->update([
             'status' => 'sent',
             'sent_at' => now(),
-            'recipients_count' => $subscribers->count(),
+            'recipients_count' => $recipientsCount,
         ]);
     }
 }
