@@ -16,6 +16,8 @@ class Article extends Model
 {
     use HasSlug;
 
+    private const MAX_REVISIONS = 20;
+
     protected $fillable = [
         'category_id', 'author_id', 'template_id', 'title', 'slug', 'excerpt', 'content',
         'featured_image', 'status', 'access_level', 'published_at', 'views_count',
@@ -41,6 +43,12 @@ class Article extends Model
         static::saving(function (Article $article) {
             if ($article->status === 'published' && blank($article->published_at)) {
                 $article->published_at = now();
+            }
+
+            $article->access_level ??= 'public';
+
+            if ($article->exists && $article->isDirty(['title', 'excerpt', 'content', 'featured_image', 'access_level'])) {
+                $article->recordRevision();
             }
         });
 
@@ -95,6 +103,29 @@ class Article extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(ArticleRevision::class)->latest();
+    }
+
+    private function recordRevision(): void
+    {
+        $this->revisions()->create([
+            'edited_by' => auth()->id(),
+            'title' => $this->getOriginal('title'),
+            'excerpt' => $this->getOriginal('excerpt'),
+            'content' => $this->getOriginal('content'),
+            'featured_image' => $this->getOriginal('featured_image'),
+            'access_level' => $this->getOriginal('access_level'),
+        ]);
+
+        $staleIds = $this->revisions()->skip(self::MAX_REVISIONS)->take(PHP_INT_MAX)->pluck('id');
+
+        if ($staleIds->isNotEmpty()) {
+            ArticleRevision::whereIn('id', $staleIds)->delete();
+        }
     }
 
     public function scopePublished($query)
