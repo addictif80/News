@@ -15,12 +15,21 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SourceSiteResource extends Resource
 {
     protected static ?string $model = SourceSite::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
+
+    protected static ?string $navigationLabel = 'Sites sources';
+
+    protected static UnitEnum|string|null $navigationGroup = 'Veille informationnelle';
+
+    protected static ?string $modelLabel = 'site source';
+
+    protected static ?string $pluralModelLabel = 'Sites sources';
 
     public static function form(Schema $schema): Schema
     {

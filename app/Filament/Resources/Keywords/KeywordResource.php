@@ -15,12 +15,21 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class KeywordResource extends Resource
 {
     protected static ?string $model = Keyword::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
+
+    protected static ?string $navigationLabel = 'Mots-clés';
+
+    protected static UnitEnum|string|null $navigationGroup = 'Veille informationnelle';
+
+    protected static ?string $modelLabel = 'mot-clé';
+
+    protected static ?string $pluralModelLabel = 'Mots-clés';
 
     public static function form(Schema $schema): Schema
     {
