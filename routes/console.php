@@ -13,3 +13,5 @@ Artisan::command('inspire', function () {
 Schedule::command('veille:run')->everyFifteenMinutes()->withoutOverlapping();
 
 Schedule::command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();
+
+Schedule::command('articles:check-links')->weekly()->withoutOverlapping();

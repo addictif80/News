@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
         'Article', 'Page', 'Category', 'Tag', 'Author', 'Comment',
         'AlertBanner', 'PopupModal', 'NewsletterSubscriber', 'NewsletterCampaign',
         'Widget', 'SourceSite', 'Keyword', 'SupportCategory', 'SupportTicket',
-        'ImportLogEntry',
+        'ImportLogEntry', 'ArticleLinkCheck',
     ];
 
     public function run(): void
