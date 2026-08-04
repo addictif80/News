@@ -34,17 +34,29 @@ class ArticlesTable
                 TextColumn::make('status')
                     ->label('Statut')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'draft' => 'Brouillon',
-                        'pending_review' => 'En attente',
-                        'published' => 'Publié',
-                        default => $state,
+                    ->formatStateUsing(function (string $state, $record): string {
+                        if ($state === 'published' && $record->published_at?->isFuture()) {
+                            return 'Programmé';
+                        }
+
+                        return match ($state) {
+                            'draft' => 'Brouillon',
+                            'pending_review' => 'En attente',
+                            'published' => 'Publié',
+                            default => $state,
+                        };
                     })
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'pending_review' => 'warning',
-                        'published' => 'success',
-                        default => 'gray',
+                    ->color(function (string $state, $record): string {
+                        if ($state === 'published' && $record->published_at?->isFuture()) {
+                            return 'info';
+                        }
+
+                        return match ($state) {
+                            'draft' => 'gray',
+                            'pending_review' => 'warning',
+                            'published' => 'success',
+                            default => 'gray',
+                        };
                     }),
                 TextColumn::make('access_level')
                     ->label('Accès')
