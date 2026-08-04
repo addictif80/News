@@ -13,10 +13,18 @@ use Illuminate\Support\Facades\Cache;
 
 class TemplateRenderer
 {
-    public function renderArticle(Article $article): string
+    /**
+     * @param  'guest'|'free'|'subscriber'|null  $previewAs  Admin/moderator-only
+     *                                                       simulation of how the article looks to a given audience, bypassing
+     *                                                       the real paywall check. Callers must verify the viewer is allowed
+     *                                                       to preview before passing anything other than null.
+     */
+    public function renderArticle(Article $article, ?string $previewAs = null): string
     {
         $template = $article->template ?? $this->defaultTemplate('article');
-        $isLocked = ! $article->isAccessibleBy(auth()->user());
+        $isLocked = $previewAs !== null
+            ? $this->isLockedForPreview($article, $previewAs)
+            : ! $article->isAccessibleBy(auth()->user());
 
         if (! $template || blank($template->html)) {
             return view('site.fallback.article', ['article' => $article, 'isLocked' => $isLocked])->render();
@@ -38,6 +46,16 @@ class TemplateRenderer
         }
 
         return $this->wrapWithStyle($html, $template->css);
+    }
+
+    private function isLockedForPreview(Article $article, string $previewAs): bool
+    {
+        return match ($previewAs) {
+            'guest' => $article->access_level !== 'public',
+            'free' => $article->access_level === 'subscribers',
+            'subscriber' => false,
+            default => false,
+        };
     }
 
     private function resolveArticleContent(Article $article, bool $isLocked): string

@@ -102,4 +102,56 @@ class ArticlePaywallTest extends TestCase
             ->assertOk()
             ->assertDontSee('réservé à nos abonnés');
     }
+
+    public function test_admin_can_preview_a_free_article_as_a_guest(): void
+    {
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $article = $this->makeArticle('free');
+
+        $this->actingAs($admin)
+            ->get(route('articles.show', $article).'?preview_as=guest')
+            ->assertOk()
+            ->assertSee('réservé aux membres inscrits');
+    }
+
+    public function test_admin_preview_as_subscriber_never_shows_the_paywall(): void
+    {
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $article = $this->makeArticle('subscribers');
+
+        $this->actingAs($admin)
+            ->get(route('articles.show', $article).'?preview_as=subscriber')
+            ->assertOk()
+            ->assertDontSee('réservé à nos abonnés');
+    }
+
+    public function test_preview_as_is_ignored_for_non_staff_users(): void
+    {
+        $user = User::factory()->create();
+        $article = $this->makeArticle('subscribers');
+
+        $this->actingAs($user)
+            ->get(route('articles.show', $article).'?preview_as=subscriber')
+            ->assertOk()
+            ->assertSee('réservé à nos abonnés');
+    }
+
+    public function test_preview_as_does_not_increment_the_view_count(): void
+    {
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $article = $this->makeArticle('public');
+
+        $this->actingAs($admin)->get(route('articles.show', $article).'?preview_as=guest');
+
+        $this->assertSame(0, $article->fresh()->views_count);
+    }
 }
