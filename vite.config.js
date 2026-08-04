@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/template-builder.js',
                 'resources/js/site-popup.js',
                 'resources/js/push-notifications.js',
+                'resources/js/carousel.js',
             ],
             refresh: true,
             fonts: [

@@ -102,6 +102,10 @@ class TemplateRenderer
                     (int) ($node->getAttribute('data-columns') ?: 3),
                     (int) ($node->getAttribute('data-rows') ?: 2),
                 ),
+                'article-carousel' => $this->renderArticleCarousel(
+                    $node->getAttribute('data-category'),
+                    (int) ($node->getAttribute('data-count') ?: 8),
+                ),
                 'alert-banner' => $this->renderAlertBanner(),
                 'newsletter-signup' => view('site.blocks.newsletter-signup')->render(),
                 'subscription-cta' => view('site.blocks.subscription-cta')->render(),
@@ -150,6 +154,26 @@ class TemplateRenderer
             return view('site.blocks.article-card-grid', [
                 'articles' => $articles,
                 'columns' => $columns,
+            ])->render();
+        });
+    }
+
+    private function renderArticleCarousel(?string $categorySlug, int $count): string
+    {
+        $count = max(1, min($count, 20));
+        $key = 'homepage:carousel:'.ContentCache::version().':'.($categorySlug ?: 'all').":{$count}";
+
+        return Cache::remember($key, now()->addMinutes(5), function () use ($categorySlug, $count) {
+            $query = Article::query()->published()->latest('published_at');
+
+            if (filled($categorySlug)) {
+                $query->whereHas('category', fn ($q) => $q->where('slug', $categorySlug));
+            }
+
+            $articles = $query->limit($count)->get();
+
+            return view('site.blocks.article-carousel', [
+                'articles' => $articles,
             ])->render();
         });
     }

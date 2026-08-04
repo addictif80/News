@@ -47,6 +47,32 @@ class PublicSiteSmokeTest extends TestCase
         $response->assertSee('Un article publié');
     }
 
+    public function test_homepage_renders_the_article_carousel_block(): void
+    {
+        Template::create([
+            'type' => 'homepage',
+            'name' => 'Accueil',
+            'is_default' => true,
+            'html' => '<div data-block="article-carousel" data-count="4"></div>',
+            'css' => '',
+        ]);
+
+        Article::create([
+            'title' => 'Article du carrousel',
+            'slug' => 'article-du-carrousel',
+            'excerpt' => 'Résumé',
+            'content' => '<p>Contenu</p>',
+            'status' => 'published',
+            'published_at' => now()->subHour(),
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Article du carrousel');
+        $response->assertSee('article-carousel__track', false);
+    }
+
     public function test_article_published_without_explicit_date_still_appears_on_homepage(): void
     {
         Template::create([

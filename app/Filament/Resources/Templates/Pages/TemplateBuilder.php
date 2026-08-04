@@ -58,6 +58,7 @@ class TemplateBuilder extends Page
             ],
             'homepage' => [
                 ['id' => 'article-card-grid', 'label' => 'Grille de cartes article', 'content' => '<div class="article-card-grid" data-block="article-card-grid" data-category="" data-columns="3" data-rows="2"></div>'],
+                ['id' => 'article-carousel', 'label' => "Carrousel d'articles", 'content' => '<div class="article-carousel-slot" data-block="article-carousel" data-category="" data-count="8"></div>'],
                 ['id' => 'alert-banner', 'label' => "Bandeau d'alerte", 'content' => '<div class="alert-banner-slot" data-block="alert-banner"></div>'],
                 ['id' => 'newsletter-signup', 'label' => 'Inscription newsletter', 'content' => '<div class="newsletter-signup-slot" data-block="newsletter-signup"></div>'],
                 ['id' => 'subscription-cta', 'label' => 'Abonnement', 'content' => '<div class="subscription-cta-slot" data-block="subscription-cta"></div>'],

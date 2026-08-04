@@ -330,6 +330,89 @@ a {
     letter-spacing: 0.01em;
 }
 
+/* ---------- Article carousel ---------- */
+
+.article-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.article-carousel__track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 0.25rem;
+    scrollbar-width: none;
+}
+
+.article-carousel__track::-webkit-scrollbar {
+    display: none;
+}
+
+.article-carousel__card {
+    flex: 0 0 auto;
+    width: 260px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease;
+}
+
+.article-carousel__card:hover {
+    box-shadow: 0 6px 20px rgba(23, 23, 26, 0.09);
+}
+
+.article-carousel__card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background-color: var(--color-hairline);
+}
+
+.article-carousel__body h3 {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0.5rem 1.1rem 0.75rem;
+    color: var(--color-ink);
+}
+
+.article-carousel__nav {
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--color-hairline);
+    border-radius: 50%;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.article-carousel__nav:hover {
+    background-color: var(--color-brand-red);
+    color: #ffffff;
+    border-color: var(--color-brand-red);
+}
+
+@media (max-width: 640px) {
+    .article-carousel__card {
+        width: 200px;
+    }
+}
+
 /* ---------- Source badge (articles importés) ---------- */
 
 .source-badge {
