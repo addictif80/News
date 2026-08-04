@@ -19,17 +19,14 @@ class VeilleService
     ) {}
 
     /**
+     * Scheduled entry point (php artisan veille:run): only polls active,
+     * watch-enabled sites that are actually due per their configured interval.
+     *
      * @return array{polled: int, imported: int}
      */
     public function run(): array
     {
         if (! $this->settings->is_enabled) {
-            return ['polled' => 0, 'imported' => 0];
-        }
-
-        $keywords = Keyword::query()->where('is_active', true)->pluck('term');
-
-        if ($keywords->isEmpty()) {
             return ['polled' => 0, 'imported' => 0];
         }
 
@@ -39,6 +36,34 @@ class VeilleService
             ->whereNotNull('rss_feed_url')
             ->get()
             ->filter(fn (SourceSite $site) => $this->isDue($site));
+
+        return $this->pollSites($sites);
+    }
+
+    /**
+     * Admin-triggered on-demand poll (a single site, a selection, or all of
+     * them) — ignores the enabled toggle and the polling interval, since the
+     * whole point is to run right now regardless of the schedule.
+     *
+     * @param  Collection<int, SourceSite>  $sites
+     * @return array{polled: int, imported: int}
+     */
+    public function pollNow(Collection $sites): array
+    {
+        return $this->pollSites($sites->filter(fn (SourceSite $site) => filled($site->rss_feed_url)));
+    }
+
+    /**
+     * @param  Collection<int, SourceSite>  $sites
+     * @return array{polled: int, imported: int}
+     */
+    private function pollSites(Collection $sites): array
+    {
+        $keywords = Keyword::query()->where('is_active', true)->pluck('term');
+
+        if ($keywords->isEmpty()) {
+            return ['polled' => 0, 'imported' => 0];
+        }
 
         $polled = 0;
         $imported = 0;
